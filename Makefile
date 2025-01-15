@@ -1,10 +1,13 @@
 all: debug run
 
 debug:
-	clang --debug game.c
+	clang --debug game.c -o game.out
 
 compile:
-	clang game.c
+	clang game.c -o game.out
 
 run:
-	./a.out
+	./game.out
+
+clean:
+	rm -f ./game.out
