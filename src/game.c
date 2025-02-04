@@ -1,3 +1,5 @@
+#include "term_tweaks.h"
+#include "termios_init.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
@@ -5,19 +7,12 @@
 #include <time.h>
 #include <unistd.h>
 
-#define clear() printf("\x1b[H\x1b[J")
-#define gotoxy(x, y) printf("\x1b[%d;%dH", y, x)
-#define curhide(i) printf(i ? "\e[?25l" : "\e[?25h")
-
 #define MAXBYTES 3
 #define FIELD_SIZE 4
 #define UP 0
 #define DOWN 1
 #define RIGHT 2
 #define LEFT 3
-
-#define RED "\x1b[31m"
-#define STD "\x1b[0m"
 
 void print_field(int **field) {
   clear();
@@ -223,13 +218,8 @@ void game() {
 
 int main() {
   struct termios oldt, newt;
-  tcgetattr(STDIN_FILENO, &oldt);
-  newt = oldt;
-  newt.c_lflag &= ~(ICANON | ECHO);
-  newt.c_cc[VMIN] = 0;
-  newt.c_cc[VTIME] = 0;
-  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+  init(&oldt, &newt);
   game();
-  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+  deinit(&oldt);
   return 0;
 }
